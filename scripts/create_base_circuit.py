@@ -96,7 +96,7 @@ new Line.line28_29 phases = 3 bus1 = 28.1.2.3 bus2 = 29.1.2.3 Length = {distance
 new Line.line25_30 phases = 3 bus1 = 25.1.2.3 bus2 = 30.1.2.3 Length = {distance(25,30)} units = mile
 new Line.line30_31 phases = 3 bus1 = 30.1.2.3 bus2 = 31.1.2.3 Length = {distance(30,31)} units = mile
 new Line.line31_32 phases = 3 bus1 = 31.1.2.3 bus2 = 32.1.2.3 Length = {distance(31,32)} units = mile
-new Line.line31_33 phases = 3 bus1 = 32.1.2.3 bus2 = 33.1.2.3 Length = {distance(31,33)} units = mile
+new Line.line31_33 phases = 3 bus1 = 31.1.2.3 bus2 = 33.1.2.3 Length = {distance(31,33)} units = mile
 new Line.line33_34 phases = 3 bus1 = 33.1.2.3 bus2 = 34.1.2.3 Length = {distance(33,34)} units = mile
 
 """)
