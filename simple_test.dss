@@ -1,0 +1,28 @@
+
+//DO NOT DIRECT EDIT THIS FILE, as it was generated from a template. 
+//Go to scripts/create_base_circuit.py to make changes.
+               
+clear
+
+new circuit.Base34NodeCkt basekv = 173.2051 pu = 1.0 phases = 3 bus1 = 1 MVAsc3=200000000 MVASC1=210000000
+
+new Line.line1_2 phases=3 bus1=1.1.2.3 bus2=2.1.2.3 Length=0.001 units=mi R1=0.1 R0=0 X1=0 Normamps=96.22504486493762 Emergamps=120.2813060811720
+
+new Load.load1 Bus1=2.1.2.3 Conn=Wye Model=1 kv=173 kw=100 kvar=0
+
+
+
+//Clear
+//New Circuit.SimpleLineCkt basekv=0.1 pu=1.0 phases=1 bus1=Bus1
+//
+//! Define a single bus
+//New Bus.Bus1 BasekV=0.1
+//
+//! Define a load bus
+//New Bus.Bus2 BasekV=0.1
+//
+//! Define a line between Bus1 and Bus2
+//New Line.Line1 phases=1 Bus1=Bus1.1 Bus2=Bus2.1 Length=0.1 units=mi R1=0.01 X1=0.01
+//
+//! Define a load connected to Bus2 with 100 kW consumption
+//New Load.Lo
