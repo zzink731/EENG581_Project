@@ -68,14 +68,10 @@ for ts in range(0, 24):
         # Retrieve the current values in amperes (returns values per phase)
         currents = dss.CktElement.CurrentsMagAng()  # Magnitude and angle of currents
 
-        # print(currents)
-        # TODO: I AM a bit confused here about what I am seeing. The sum of the currents on each phase is way over the limit,
-        # but each phase looked at individually seem more like the right magnitudes, making me think the capacities given in the prbolem are wrong.
         # Extract magnitude values for each phase (assuming a three-phase line)
         currents_magnitude = currents[::2][
             :3
         ]  # Get the magnitudes for the first three phases
-        # print(currents_magnitude)
 
         # Get the normal and emergency ampacity ratings for the line
         norm_amps = dss.Lines.NormAmps()

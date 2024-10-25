@@ -13,7 +13,7 @@ To create the base circuit dss file, run
 python3 ./scripts/create_base_circuit.py
 ```
 
-This populates the lengths between nodes...it should probably add the impedances too.
+This populates the lengths between nodes.
 
-Questions 
-- the Normamps parameter is per phase. I think the line capacities given in the problem actually were meant to be per phase, not three-phase values. Can someone confirm/deny?
+## Questions
+- Should we consider an outage at 1.25x the line capacity or just anything above the line capacity?

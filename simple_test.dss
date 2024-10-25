@@ -6,7 +6,7 @@ clear
 
 new circuit.Base34NodeCkt basekv = 173.2051 pu = 1.0 phases = 3 bus1 = 1 MVAsc3=200000000 MVASC1=210000000
 
-new Line.line1_2 phases=3 bus1=1.1.2.3 bus2=2.1.2.3 Length=0.001 units=mi R1=0.1 R0=0 X1=0 Normamps=96.22504486493762 Emergamps=120.2813060811720
+new Line.line1_2 phases=3 bus1=1.1.2.3 bus2=2.1.2.3 Length=0.001 units=mi R1=0.1 R0=0 X1=0
 
 new Load.load1 Bus1=2.1.2.3 Conn=Wye Model=1 kv=173 kw=100 kvar=0
 
