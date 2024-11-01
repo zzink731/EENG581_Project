@@ -50,7 +50,7 @@ with open("base_circuit.dss", "w") as file:
                
 clear
 
-new circuit.Base34NodeCkt basekv = {LL_KV} pu = 1.0 phases = 3 bus1 = 1 MVAsc3=20000 MVASC1=21000
+new circuit.Base34NodeCkt basekv = {LL_KV} pu = 1.05 phases = 3 bus1 = 1 MVAsc3=20000 MVASC1=21000
 
 new Load.load1 Bus1 = 1.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 0
 new Load.load2 Bus1 = 2.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 0 
@@ -86,6 +86,8 @@ new Load.load31 Bus1 = 31.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 
 new Load.load32 Bus1 = 32.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 0
 new Load.load33 Bus1 = 33.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 0
 new Load.load34 Bus1 = 34.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = 0 kvar = 0 
+
+new Load.Gen Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = {LL_KV} kw = -1500 kvar = 0
 
 new Line.line1_2 phases = 3 bus1 = 1.1.2.3 bus2 = 2.1.2.3 Length = {distance(1,2)} units = mile R1={LINE_RESISTANCE} X1={LINE_REACTANCE} Normamps={LC_1_13} Emergamps={1.25*LC_1_13}
 new Line.line2_3 phases = 3 bus1 = 2.1.2.3 bus2 = 3.1.2.3 Length = {distance(2,3)} units = mile R1={LINE_RESISTANCE} X1={LINE_REACTANCE} Normamps={LC_1_13} Emergamps={1.25*LC_1_13}

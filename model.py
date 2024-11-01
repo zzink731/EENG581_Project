@@ -37,8 +37,36 @@ def compute_results():
     voltage_results = dss.Circuit.AllBusVMag()
     return voltage_results
 
+def solution_case():
+    dss.Commands('Edit Line.line1_2 Normamps=130 Emergamps=150')
+    dss.Commands('Edit Line.line2_3 Normamps=130 Emergamps=150')
+    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=50')
+    dss.Commands('new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -450 kvar = 0')
+    dss.Commands('new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -1300 kvar = 0')
+
+    dss.Commands("""
+    New Transformer.Reg1 phases=1 bank=reg1 XHL=0.01 kVAs=[800 800]
+    ~ Buses=[15.1 rg.1] kVs=[13.87  13.87] %LoadLoss=0.01
+    new regcontrol.Reg1  transformer=Reg1 winding=2  vreg=140  band=1  ptratio=100
+
+    New Transformer.Reg2 phases=1 bank=reg1 XHL=0.01 kVAs=[800 800]
+    ~ Buses=[15.2 rg.2] kVs=[13.87  13.87] %LoadLoss=0.01
+    new regcontrol.Reg2  transformer=Reg2 winding=2  vreg=140  band=1  ptratio=100
+
+    New Transformer.Reg3 phases=1 bank=reg1 XHL=0.01 kVAs=[800 800]
+    ~ Buses=[15.3 rg.3] kVs=[13.87 13.87] %LoadLoss=0.01
+    new regcontrol.Reg3  transformer=Reg3 winding=2  vreg=140  band=1  ptratio=100
+    """)
+
+
 
 dss.Commands('Redirect "base_circuit.dss"')
+dss.Solution.MaxControlIterations(20)
+
+ 
+solution_case() #Edits OpenDSS model to include proposed improvements
+
+dss.Solution.Solve()
 
 voltages = []
 currents = []
@@ -101,3 +129,5 @@ for i, bus_voltages in enumerate(voltage_timeseries):
         0.6,
         "Nodes increase in redness as they increase in number (number 34 is totally red)",
     )
+plt.legend()
+# %%
