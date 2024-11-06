@@ -22,7 +22,6 @@ def load_dict_from_profiles(timestep: int):
         loads["load" + str(node)] = (
             load_profiles.loc[timestep]["Profile " + str(profile)] * num_cust
         )
-    print("TOTAL LOADS", sum(loads.values()))
 
     return loads
 
@@ -32,18 +31,57 @@ def set_loads(loads: dict[str, float]):
         # bottom of page 1 of the project says to use a pf of 0.9
         dss.Commands(f"Edit Load.{load} kw = {loads[load]} Pf = 0.9")
 
+def set_generation(ts: int):
+    gen_13 = [0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 800,800, 0, 0, 0, -200, -300, -300, -2900, -2900, -2900, -1800, -800]
+    gen_29 = [500, 500, 500, 500, 500, 500, 500, 500, 0, 0, 0, 0, 0, 0, 0, 0, -200, -500, -1500, -1500, -1600, -1600, -1600, -1500]
+
+    #print(sum(gen_13))
+    #print(sum(gen_29))
+    solar_profile = pd.read_csv("data/solar_profiles.csv")
+    solar_irrad_dict = {}
+    for i in solar_profile.index:
+        solar_irrad_dict[i] = solar_profile.loc[i]["Profile"]
+    
+
+
+
+    print("Solar power:",solar_irrad_dict[ts]*5)
+    dss.Commands(f'edit Load.solar13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -{solar_irrad_dict[ts]*5} kvar = 0')
+    dss.Commands(f'edit Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = {gen_13[ts]} kvar = 0')
+    dss.Commands(f'edit Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = {gen_29[ts]} kvar = 0')
+
+
+    dss.Commands('edit Load.load22 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load30 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load31 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load32 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load33 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load34 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+
+    dss.Commands('edit Load.load15 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load16 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load17 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('edit Load.load18 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
 
 def compute_results():
     voltage_results = dss.Circuit.AllBusVMag()
     return voltage_results
 
 def solution_case():
-    dss.Commands('Edit Line.line1_2 Normamps=130 Emergamps=150')
-    dss.Commands('Edit Line.line2_3 Normamps=130 Emergamps=150')
-    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=50')
-    dss.Commands('new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -450 kvar = 0')
-    dss.Commands('new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -1300 kvar = 0')
 
+    #Reconductoring
+    #dss.Commands('Edit Line.line1_2 Normamps=130 Emergamps=150')
+    #dss.Commands('Edit Line.line2_3 Normamps=130 Emergamps=150')
+    #dss.Commands('Edit Line.line3_4 Normamps=130 Emergamps=150')
+    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=50')
+
+    #Batteries, Wind
+    dss.Commands('new Load.solar13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    
+    #Voltage Regulation
+    dss.Commands('edit Line.line15_16 bus1 = rg.1.2.3')
     dss.Commands("""
     New Transformer.Reg1 phases=1 bank=reg1 XHL=0.01 kVAs=[800 800]
     ~ Buses=[15.1 rg.1] kVs=[13.87  13.87] %LoadLoss=0.01
@@ -73,7 +111,7 @@ currents = []
 for ts in range(0, 24):
     loads = load_dict_from_profiles(ts)
     set_loads(loads)
-
+    set_generation(ts)
     dss.Solution.Solve()
 
     results = compute_results()
@@ -82,6 +120,12 @@ for ts in range(0, 24):
         (results[i] + results[i + 1] + results[i + 2]) / 3
         for i in range(0, len(results), 3)
     ]
+
+    power = 0
+    for load in dss.Loads.AllNames():
+        dss.Loads.Name(load)
+        power += dss.Loads.kW()
+    print(ts,"net power:",power)
 
     voltages.append(node_voltage_averages)
 
@@ -129,5 +173,4 @@ for i, bus_voltages in enumerate(voltage_timeseries):
         0.6,
         "Nodes increase in redness as they increase in number (number 34 is totally red)",
     )
-plt.legend()
 # %%
