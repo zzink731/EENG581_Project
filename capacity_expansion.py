@@ -191,7 +191,7 @@ def run_model(days):
     ax.set_xlim(0, 23)
     ax2.set_xlim(0, 23)
     ax2.set_xlabel("hour of day")
-    ax.set_ylabel("MW generation")
+    ax.set_ylabel("kW generation")
 
     colors = {
         "coal": "xkcd:dark",
