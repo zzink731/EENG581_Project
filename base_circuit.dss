@@ -4,7 +4,7 @@
                
 clear
 
-new circuit.Base34NodeCkt basekv = 24 pu = 1.05 phases = 3 bus1 = 1 MVAsc3=20000 MVASC1=21000
+new circuit.Base34NodeCkt basekv = 24 pu = 1.00 phases = 3 bus1 = 1 MVAsc3=20000 MVASC1=21000
 
 new Load.load1 Bus1 = 1.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0
 new Load.load2 Bus1 = 2.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0 
@@ -40,8 +40,6 @@ new Load.load31 Bus1 = 31.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0
 new Load.load32 Bus1 = 32.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0
 new Load.load33 Bus1 = 33.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0
 new Load.load34 Bus1 = 34.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0 
-
-new Load.Gen Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -1500 kvar = 0
 
 new Line.line1_2 phases = 3 bus1 = 1.1.2.3 bus2 = 2.1.2.3 Length = 0.38 units = mile R1=1.9 X1=1.4 Normamps=96.22504486493762 Emergamps=120.28130608117202
 new Line.line2_3 phases = 3 bus1 = 2.1.2.3 bus2 = 3.1.2.3 Length = 0.36 units = mile R1=1.9 X1=1.4 Normamps=96.22504486493762 Emergamps=120.28130608117202

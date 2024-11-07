@@ -11,7 +11,7 @@ PHASE_KV = BASE_KV / (3**0.5)
 
 plt.rcParams["figure.dpi"] = 300
 plt.rcParams["savefig.dpi"] = 300
-plot.enable(show=False)
+# plot.enable(show=False)
 
 CREATE_ANIMATION = False
 
@@ -72,13 +72,15 @@ def solution_case():
 
 
 def plot_grid(ts):
-    dss.Text.Command("Buscoords data/node_positions.csv")
-    dss.Text.Command("plot circuit currents")
-    if CREATE_ANIMATION:
-        plt.title(ts)
-        plt.savefig(f"generated_images/current{ts}.png")
+    if ts == 20:
+        dss.Text.Command("Buscoords data/node_positions.csv")
+        # dss.Text.Command("plot circuit currents")
+        dss.Text.Command = "Plot Circuit Linewidth=2 colorphases=yes"
+        if CREATE_ANIMATION:
+            plt.title(ts)
+            plt.savefig(f"generated_images/current{ts}.png")
 
-    dss.Text.Command("plot scatter")
+    # dss.Text.Command("plot scatter")
 
 
 dss.Commands('Redirect "base_circuit.dss"')
@@ -91,6 +93,7 @@ dss.Solution.Solve()
 
 voltages = []
 currents = []
+over_currents = []
 for ts in range(0, 24):
     loads = load_dict_from_profiles(ts)
     set_loads(loads)
@@ -112,6 +115,7 @@ for ts in range(0, 24):
 
     # currents at this timestep
     currents_ts = dict()
+    this_ts_over_currents = []
     for line in lines:
         # Set the active line
         dss.Lines.Name(line)
@@ -130,10 +134,17 @@ for ts in range(0, 24):
 
         # Check for overload condition
         for phase, current in enumerate(currents_magnitude, start=1):
-            if current > emerg_amps:
+            print(phase)
+            if phase == 1 and current > emerg_amps:
+                this_ts_over_currents.append(line)
                 print(
                     f"({ts}) Line {line} is overloaded on Phase {phase}. Current: {current} A, EmergAmps: {emerg_amps} A"
                 )
+    over_currents.append(this_ts_over_currents)
+
+df_over_currents = pd.DataFrame(
+    {"hour": range(1, 25), "over_currents": [", ".join(lines) for lines in over_currents]}
+)
 
 
 # Transform the list
