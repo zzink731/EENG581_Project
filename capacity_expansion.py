@@ -34,14 +34,12 @@ def load_dict_from_profiles(timestep: int):
         loads["load" + str(node)] = (
             load_profiles.loc[timestep]["Profile " + str(profile)] * num_cust
         )
-    # print("TOTAL LOADS", sum(loads.values()))
 
     return loads
 
 
 solar = pd.read_csv("data/solar_profiles.csv")
 loads = [sum(load_dict_from_profiles(ts).values()) for ts in range(24)]
-
 
 data_emissions = {
     "coal_low": 0.8,
@@ -189,7 +187,6 @@ def run_model(days):
     )
     ax2.set_ylabel("Battery SOC")
     ax2.set_ylim(0, 1)
-
     ax.set_title(f"{days} day(s) of O&M and Emissions costs considered")
     ax.set_xlim(0, 23)
     ax2.set_xlim(0, 23)
@@ -207,5 +204,5 @@ def run_model(days):
     plt.savefig(f"generated_images/{days}-capacity-expansion.png")
 
 
-for i in range(1, 15):
+for i in range(1, 10):
     run_model(i)
