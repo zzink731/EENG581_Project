@@ -1,3 +1,4 @@
+# %%
 from gamspy import Container, Set, Variable
 
 # Initialize the model container
@@ -13,4 +14,4 @@ SOC = Variable(m, name="SOC", domain=t, type="positive")
 SOC.up = 1
 
 # Fix 'SOC' at element 't2' to a value of 0.5
-SOC["t2"].fx = 0.5
+SOC.fx["t2"] = 0.5

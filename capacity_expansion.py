@@ -193,11 +193,19 @@ def run_model(days):
     ax2.set_xlabel("hour of day")
     ax.set_ylabel("MW generation")
 
+    colors = {
+        "coal": "xkcd:dark",
+        "gas_cc": "xkcd:ruby",
+        "gas": "xkcd:gross green",
+        "solar_pv": "xkcd:saffron",
+        "battery": "xkcd:deep lavender",
+    }
     for gen_type in generation_chosen.generators.unique():
         ax.plot(
             range(24),
             (P.records[P.records.generators == gen_type]).level,
             label=gen_type,
+            color=colors[gen_type],
         )
     ax.legend(loc="upper left")
 
