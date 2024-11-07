@@ -4,7 +4,7 @@
 
 # Install dependencies
 ```
-pip3 install OpenDSSDirect.py pandas
+pip3 install OpenDSSDirect.py pandas altdss dss-python[plot]
 ```
 
 ## Set up

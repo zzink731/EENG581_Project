@@ -1,4 +1,5 @@
 # %%
+from dss import plot
 from opendssdirect import dss
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -7,6 +8,12 @@ import numpy as np
 
 BASE_KV = 24  # kv (RMS, line to line)
 PHASE_KV = BASE_KV / (3**0.5)
+
+plt.rcParams["figure.dpi"] = 300
+plt.rcParams["savefig.dpi"] = 300
+# plot.enable(show=False)
+
+CREATE_ANIMATION = False
 
 
 def load_dict_from_profiles(timestep: int):
@@ -37,12 +44,17 @@ def compute_results():
     voltage_results = dss.Circuit.AllBusVMag()
     return voltage_results
 
+
 def solution_case():
-    dss.Commands('Edit Line.line1_2 Normamps=130 Emergamps=150')
-    dss.Commands('Edit Line.line2_3 Normamps=130 Emergamps=150')
-    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=50')
-    dss.Commands('new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -450 kvar = 0')
-    dss.Commands('new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -1300 kvar = 0')
+    dss.Commands("Edit Line.line1_2 Normamps=130 Emergamps=150")
+    dss.Commands("Edit Line.line2_3 Normamps=130 Emergamps=150")
+    dss.Commands("Edit Line.line23_25 Normamps=40 Emergamps=50")
+    dss.Commands(
+        "new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -450 kvar = 0"
+    )
+    dss.Commands(
+        "new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -1300 kvar = 0"
+    )
 
     dss.Commands("""
     New Transformer.Reg1 phases=1 bank=reg1 XHL=0.01 kVAs=[800 800]
@@ -59,17 +71,29 @@ def solution_case():
     """)
 
 
+def plot_grid(ts):
+    if ts == 20:
+        dss.Text.Command("Buscoords data/node_positions.csv")
+        # dss.Text.Command("plot circuit currents")
+        dss.Text.Command = "Plot Circuit Linewidth=2 colorphases=yes"
+        if CREATE_ANIMATION:
+            plt.title(ts)
+            plt.savefig(f"generated_images/current{ts}.png")
+
+    # dss.Text.Command("plot scatter")
+
 
 dss.Commands('Redirect "base_circuit.dss"')
 dss.Solution.MaxControlIterations(20)
 
- 
-solution_case() #Edits OpenDSS model to include proposed improvements
+
+# solution_case()  # Edits OpenDSS model to include proposed improvements
 
 dss.Solution.Solve()
 
 voltages = []
 currents = []
+over_currents = []
 for ts in range(0, 24):
     loads = load_dict_from_profiles(ts)
     set_loads(loads)
@@ -87,8 +111,11 @@ for ts in range(0, 24):
 
     lines = dss.Lines.AllNames()
 
+    # plot_grid(ts)
+
     # currents at this timestep
     currents_ts = dict()
+    this_ts_over_currents = []
     for line in lines:
         # Set the active line
         dss.Lines.Name(line)
@@ -107,10 +134,17 @@ for ts in range(0, 24):
 
         # Check for overload condition
         for phase, current in enumerate(currents_magnitude, start=1):
-            if current > emerg_amps:
+            print(phase)
+            if phase == 1 and current > emerg_amps:
+                this_ts_over_currents.append(line)
                 print(
                     f"({ts}) Line {line} is overloaded on Phase {phase}. Current: {current} A, EmergAmps: {emerg_amps} A"
                 )
+    over_currents.append(this_ts_over_currents)
+
+df_over_currents = pd.DataFrame(
+    {"hour": range(1, 25), "over_currents": [", ".join(lines) for lines in over_currents]}
+)
 
 
 # Transform the list
@@ -126,8 +160,19 @@ for i, bus_voltages in enumerate(voltage_timeseries):
     plt.ylabel("voltage [pu]")
     plt.text(
         0,
-        0.6,
+        0,
         "Nodes increase in redness as they increase in number (number 34 is totally red)",
     )
-plt.legend()
+# plt.legend()
 # %%
+# Must have ffmepg installed to run this part, can take a few minutes
+# brew install ffmpeg
+# Also need to add imageio and imageio-ffmpeg
+# pip3 install imageio imageio-ffmpeg
+import imageio
+
+# filenames = glob.glob("./generated_images/current*.png")
+images = []
+for ts in range(0, 24):
+    images.append(imageio.imread(f"./generated_images/current{ts}.png"))
+imageio.mimsave("./generated_images/current_base.mp4", images)
