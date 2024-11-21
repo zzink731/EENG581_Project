@@ -32,11 +32,13 @@ def set_loads(loads: dict[str, float]):
         dss.Commands(f"Edit Load.{load} kw = {loads[load]} Pf = 0.9")
 
 def set_generation(ts: int):
-    gen_13 = [0, 0, 0, 0, 300, 0, 0, 0, 0, 0, 0, 800,800, 0, 0, 0, -200, -300, -300, -2900, -2900, -2900, -1800, -800]
-    gen_29 = [500, 500, 500, 500, 500, 500, 500, 500, 0, 0, 0, 0, 0, 0, 0, 0, -200, -500, -1500, -1500, -1600, -1600, -1600, -1500]
+    index =  [    0,     1,    2,   3,    4,      5,     6, 7, 8, 9,   10,  11  ,12  ,13,    14,  15,  16, 17,    18,   19,    20,    21,    22,   23  ]
+    gen_13 = [-1100, -1000, -900, -900, -1100, -1400, -800, 0, 0, 400, 600, 800, 1000, 1000, 1000, 0,  0,  0, -400,   -2300,   -2900,   -2900, -2100, -1200]
+    gen_29 = [-1000,  -900, -900, -900, -1000, -1200, -800, 0, 0, 100, 0, 0, 0, 0, 200, 0,   0, -200, -1000, -1600, -1600, -1600, -1600, -1500]
 
-    #print(sum(gen_13))
-    #print(sum(gen_29))
+    print(sum(gen_13))
+    print(sum(gen_29))
+
     solar_profile = pd.read_csv("data/solar_profiles.csv")
     solar_irrad_dict = {}
     for i in solar_profile.index:
@@ -45,23 +47,27 @@ def set_generation(ts: int):
 
 
 
-    print("Solar power:",solar_irrad_dict[ts]*5)
-    dss.Commands(f'edit Load.solar13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -{solar_irrad_dict[ts]*5} kvar = 0')
+    print("Solar power 13:",solar_irrad_dict[ts]*7)
+    print("Solar power 29:",solar_irrad_dict[ts]*7)
+    dss.Commands(f'edit Load.solar13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -{solar_irrad_dict[ts]*7} kvar = 0')
+    dss.Commands(f'edit Load.solar29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = -{solar_irrad_dict[ts]*0} kvar = 0')
     dss.Commands(f'edit Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = {gen_13[ts]} kvar = 0')
     dss.Commands(f'edit Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = {gen_29[ts]} kvar = 0')
 
+    load_shedding = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,0,0]
 
-    dss.Commands('edit Load.load22 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load30 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load31 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load32 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load33 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load34 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    if load_shedding[ts] == 1:
+        dss.Commands('edit Load.load22 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load30 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load31 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load32 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load33 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load34 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
 
-    dss.Commands('edit Load.load15 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load16 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load17 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
-    dss.Commands('edit Load.load18 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load15 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load16 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load17 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+        dss.Commands('edit Load.load18 Bus1 = 15.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
 
 def compute_results():
     voltage_results = dss.Circuit.AllBusVMag()
@@ -73,10 +79,11 @@ def solution_case():
     #dss.Commands('Edit Line.line1_2 Normamps=130 Emergamps=150')
     #dss.Commands('Edit Line.line2_3 Normamps=130 Emergamps=150')
     #dss.Commands('Edit Line.line3_4 Normamps=130 Emergamps=150')
-    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=50')
+    dss.Commands('Edit Line.line23_25 Normamps=40 Emergamps=60')
 
     #Batteries, Wind
     dss.Commands('new Load.solar13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
+    dss.Commands('new Load.solar29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
     dss.Commands('new Load.gen13 Bus1 = 13.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
     dss.Commands('new Load.gen29 Bus1 = 29.1.2.3 Conn = Wye Model = 1 kv = 24 kw = 0 kvar = 0')
     
